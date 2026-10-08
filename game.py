@@ -13,11 +13,16 @@ def bezier(p0, p1, p2, p3, t):
     y = u ** 3 * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1]+ t ** 3 * p3[1]
     return pygame.Vector2(x, y)
 
+WAVE_TINTS = (
+    None,
+    {"boss": (255, 215, 0), "red": (255, 130, 40), "blue": (60, 220, 220)},
+    {"boss": (60, 200, 160), "red": (230, 90, 180), "blue": (240, 230, 90)},
+)
 
-def enemy_tint(kind):
+
+def enemy_tint(kind, wave=1):
     """Return an (r, g, b) colour override for an enemy kind, or None for the default."""
-    pass
-
+    return (WAVE_TINTS[(wave - 1) % len(WAVE_TINTS)] or {}).get(kind)
 
 def on_wave_start(wave):
     """Called at the start of every wave; add banners, speed-ups, or palette swaps here."""
@@ -189,7 +194,7 @@ class Game:
         for enemy in self.enemies:
             if enemy.delay > 0:
                 continue
-            color = enemy_tint(enemy.kind) or ENEMY_COLORS[enemy.kind]
+            color = enemy_tint(enemy.kind, self.wave) or ENEMY_COLORS[enemy.kind]
             if enemy.kind == "boss" and enemy.hp == 1:
                 color = (170, 90, 220)
             x, y = enemy.pos
